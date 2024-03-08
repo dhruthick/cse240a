@@ -16,8 +16,7 @@ size_t len = 0;
 
 // Print out the Usage information to stderr
 //
-void
-usage()
+void usage()
 {
   fprintf(stderr,"Usage: predictor <options> [<trace>]\n");
   fprintf(stderr,"       bunzip -kc trace.bz2 | predictor <options>\n");
@@ -36,8 +35,7 @@ usage()
 //
 // Returns True if Successful
 //
-int
-handle_option(char *arg)
+int handle_option(char *arg)
 {
   if (!strcmp(arg,"--static")) {
     bpType = STATIC;
@@ -63,8 +61,7 @@ handle_option(char *arg)
 //
 // Returns True if Successful 
 //
-int
-read_branch(uint32_t *pc, uint8_t *outcome)
+int read_branch(uint32_t *pc, uint8_t *outcome)
 {
   if (getline(&buf, &len, stream) == -1) {
     return 0;
@@ -77,8 +74,7 @@ read_branch(uint32_t *pc, uint8_t *outcome)
   return 1;
 }
 
-int
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   // Set defaults
   stream = stdin;
@@ -120,7 +116,7 @@ main(int argc, char *argv[])
       mispredictions++;
     }
     if (verbose != 0) {
-      printf ("%d\n", prediction);
+      printf ("%d %d\n", prediction, outcome);
     }
 
     // Train the predictor
