@@ -51,6 +51,7 @@ uint8_t *gshare_pattern_table;
 uint64_t global_history_gshare;
 uint32_t pattern_count;
 
+
 void init_gshare_predictor()
 {
   // initialize global history
@@ -135,7 +136,7 @@ void init_predictor()
 uint8_t make_gshare_prediction(uint32_t pc)
 {
   // pattern = global history XOR pc
-  uint8_t pattern = (global_history_gshare ^ pc);
+  uint32_t pattern = (global_history_gshare ^ pc);
   // consider only the last m bits
   pattern = pattern & (pattern_count - 1);
   // get prediction from pattern table
@@ -212,7 +213,7 @@ uint8_t make_prediction(uint32_t pc)
 void train_gshare_predictor(uint32_t pc, uint8_t outcome)
 {
   // pattern = global history XOR pc
-  uint8_t pattern = (global_history_gshare ^ pc);
+  uint32_t pattern = (global_history_gshare ^ pc);
   // consider only the last m bits
   pattern = pattern & (pattern_count - 1);
   // get prediction from pattern table
