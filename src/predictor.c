@@ -58,6 +58,7 @@ void init_gshare_predictor()
   global_history_gshare = 0;
   // number of patterns = 2^m
   pattern_count = 1 << ghistoryBits;
+  printf("---GSHARE:%d---\n",ghistoryBits);
   // allocate space for pattern table
   gshare_pattern_table = malloc(pattern_count * sizeof(uint8_t));
   // initalize pattern table to "weak not taken" for all patterns
@@ -105,7 +106,7 @@ void init_tournament_predictor()
 {
   init_global_predictor();
   init_local_predictor();
-
+  printf("---Tournament:%d%d%d---\n",ghistoryBits, lhistoryBits, pcIndexBits);
 
   // SS: "'ghistoryBits' will be used to size the global and choice predictors"
   // is present in the README, but I think it should be PC index bits
