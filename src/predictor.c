@@ -326,7 +326,7 @@ void train_perceptron_predictor(uint32_t pc, uint8_t outcome)
 {
   // Get the perceptron index based on the lower bits of the PC
   int pcIndex = pc & (pcIndexLength - 1);
-  int max = 1024;
+  int max = 128;
   // Update the perceptron weights
   for (int i = 0; i < ghistoryBits; i++)
   {
