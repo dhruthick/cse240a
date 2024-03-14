@@ -302,6 +302,7 @@ uint8_t make_perceptron_prediction(uint32_t pc)
   {
     // Get the corresponding bit from the BHR
     int bit = (bhr >> i) & 1;
+    bit = 2 * bit - 1;
     // Multiply the bit with the corresponding weight and add to the output
     // output += bit * perceptronWeights[pcIndex][i];
     // replace with if else for better performance
@@ -326,42 +327,62 @@ void train_perceptron_predictor(uint32_t pc, uint8_t outcome)
 {
   // Get the perceptron index based on the lower bits of the PC
   int pcIndex = pc & (pcIndexLength - 1);
-  int max = 128;
-  // Update the perceptron weights
+  int max = 64;
+
+  // make a prediction
+  // Calculate the perceptron output
+  int output = 0;
   for (int i = 0; i < ghistoryBits; i++)
   {
     // Get the corresponding bit from the BHR
     int bit = (bhr >> i) & 1;
-    // Update the weight based on the outcome with saturation checks
-
     bit = 2 * bit - 1;
-
-    if (outcome == TAKEN)
+    // Multiply the bit with the corresponding weight and add to the output
+    // output += bit * perceptronWeights[pcIndex][i];
+    // replace with if else for better performance
+    if (bit == 1)
     {
-      if (perceptronWeights[pcIndex][i] < max)
-      {
-        perceptronWeights[pcIndex][i] += bit;
-      }
+      output += perceptronWeights[pcIndex][i];
     }
     else
     {
-      if (perceptronWeights[pcIndex][i] > -max)
+      output -= perceptronWeights[pcIndex][i];
+    }
+  }
+  // Add the bias weight to the output
+  output += perceptronWeights[pcIndex][ghistoryBits];
+
+  uint8_t predict_outcome = (output > 0) ? TAKEN : NOTTAKEN;
+
+  // Update the perceptron weights
+  if (outcome != predict_outcome || abs(output) < max)
+  {
+
+    for (int i = 0; i < ghistoryBits; i++)
+    {
+      // Get the corresponding bit from the BHR
+      int bit = (bhr >> i) & 1;
+      bit = 2 * bit - 1;
+
+      // predict
+      int output = 0;
+
+      if (outcome == TAKEN)
+      {
+        perceptronWeights[pcIndex][i] += bit;
+      }
+      else
       {
         perceptronWeights[pcIndex][i] -= bit;
       }
     }
-  }
-  // Update the bias weight with saturation checks
-  if (outcome == TAKEN)
-  {
-    if (perceptronWeights[pcIndex][ghistoryBits] < max)
+
+    // Update the bias weight
+    if (outcome == TAKEN)
     {
       perceptronWeights[pcIndex][ghistoryBits] += 1;
     }
-  }
-  else
-  {
-    if (perceptronWeights[pcIndex][ghistoryBits] > -max)
+    else
     {
       perceptronWeights[pcIndex][ghistoryBits] -= 1;
     }
